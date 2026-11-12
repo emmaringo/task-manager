@@ -1,5 +1,8 @@
-# Imagen base
-FROM node:20-alpine AS base
+# Imagen base - Usar Debian en lugar de Alpine para mejor compatibilidad con Prisma
+FROM node:20-slim AS base
+
+# Instalar OpenSSL (requerido por Prisma)
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Etapa de dependencias
 FROM base AS deps
@@ -30,11 +33,18 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Crear usuario no-root para seguridad
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 expressjs
+
 # Copiar archivos necesarios
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/prisma ./prisma
+COPY --from=builder --chown=expressjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=expressjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=expressjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=expressjs:nodejs /app/prisma ./prisma
+
+# Cambiar a usuario no-root
+USER expressjs
 
 # Exponer puerto
 EXPOSE 3001

@@ -25,7 +25,7 @@ Aplicación completa de gestión de tareas construida con **React**, **Node.js**
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
 │                 │      │                 │      │                 │
 │   Frontend      │─────▶│   Backend       │─────▶│   PostgreSQL    │
-│   (Vercel)      │      │   (Koyeb)       │      │   (Neon)        │
+│   (Vercel)      │      │   (Render)      │      │   (Neon)        │
 │   React + Vite  │      │   Express + TS  │      │   Prisma ORM    │
 │                 │      │                 │      │                 │
 └─────────────────┘      └─────────────────┘      └─────────────────┘
@@ -51,7 +51,7 @@ Aplicación completa de gestión de tareas construida con **React**, **Node.js**
 
 ### Despliegue (todo gratuito)
 - **Frontend**: Vercel (free tier, CDN global)
-- **Backend**: Koyeb (512 MB RAM, scale-to-zero)
+- **Backend**: Render (512 MB RAM, scale-to-zero)
 - **Base de datos**: Neon (0.5 GB storage, 10 GB bandwidth)
 - **Dominio**: DNS.HE o similares (subdominio gratuito)
 
@@ -70,7 +70,7 @@ task-manager/
 │   │       └── prisma.ts    # Cliente Prisma
 │   ├── prisma/
 │   │   └── schema.prisma    # Modelo de datos
-│   ├── Dockerfile           # Para Koyeb
+│   ├── Dockerfile           # Para Render
 │   ├── package.json
 │   └── README.md
 │
@@ -172,30 +172,41 @@ Abre tu navegador en `http://localhost:5173` y deberías ver la aplicación func
 3. Copia la **Connection String** (la necesitarás para el backend)
 4. ¡Listo! Neon se encarga del resto
 
-### Paso 2: Backend en Koyeb
+### Paso 2: Backend en Render
 
 1. Sube tu código a GitHub (si no lo has hecho)
 
-2. Ve a [Koyeb](https://app.koyeb.com) y crea una cuenta
+2. Ve a [Render](https://render.com) y crea una cuenta (puedes usar GitHub)
 
-3. Crea un nuevo servicio:
-   - **Source**: GitHub
-   - **Repository**: tu repositorio
-   - **Branch**: main
-   - **Builder**: Docker
-   - **Dockerfile path**: `backend/Dockerfile`
-   - **Port**: 3001
+3. Desde el dashboard, haz clic en **"New +"** → **"Web Service"**
 
-4. Configura las **variables de entorno**:
+4. Conecta tu repositorio de GitHub y selecciónalo
+
+5. Configura el servicio:
+   - **Name**: `task-manager-backend` (o el que prefieras)
+   - **Region**: Elige la más cercana (ej. Oregon para Latinoamérica)
+   - **Branch**: `main`
+   - **Root Directory**: `backend`
+   - **Environment**: `Docker`
+   - **Instance Type**: `Free`
+
+6. Configura las **variables de entorno** (Environment Variables):
    ```
    DATABASE_URL = <tu connection string de Neon>
    PORT = 3001
    FRONTEND_URL = https://<tu-app>.vercel.app
+   NODE_ENV = production
    ```
    (La URL de Vercel la obtendrás en el siguiente paso)
 
-5. Despliega y copia la **URL pública** que te asigna Koyeb
-   - Ejemplo: `https://task-manager-backend-xxx.koyeb.app`
+7. Haz clic en **"Create Web Service"**
+
+8. Espera a que se complete el deploy (2-5 minutos la primera vez)
+
+9. Copia la **URL pública** que te asigna Render
+   - Ejemplo: `https://task-manager-backend-xxx.onrender.com`
+
+**Nota importante**: El plan gratuito de Render tiene "scale-to-zero", lo que significa que después de 15 minutos de inactividad, el servicio se duerme. La primera petición puede tardar 30-50 segundos en responder (cold start). Esto es normal y completamente gratis.
 
 ### Paso 3: Frontend en Vercel
 
@@ -211,14 +222,14 @@ Abre tu navegador en `http://localhost:5173` y deberías ver la aplicación func
 
 4. Añade la variable de entorno:
    ```
-   VITE_API_URL = https://task-manager-backend-xxx.koyeb.app/api
+   VITE_API_URL = https://task-manager-backend-xxx.onrender.com/api
    ```
-   (Usa la URL de Koyeb del paso anterior)
+   (Usa la URL de Render del paso anterior)
 
 5. Despliega y copia tu **URL de Vercel**
    - Ejemplo: `https://task-manager-xxx.vercel.app`
 
-6. **Importante**: Vuelve a Koyeb y actualiza la variable `FRONTEND_URL` con tu URL de Vercel (para el CORS)
+6. **Importante**: Vuelve a Render y actualiza la variable `FRONTEND_URL` con tu URL de Vercel (para el CORS)
 
 ### Paso 4: Dominio personalizado (opcional)
 
@@ -251,26 +262,26 @@ Abre tu navegador en `http://localhost:5173` y deberías ver la aplicación func
 
 **Crear tarea:**
 ```bash
-curl -X POST https://tu-api.koyeb.app/api/tasks \
+curl -X POST https://tu-api.onrender.com/api/tasks \
   -H "Content-Type: application/json" \
   -d '{"title": "Aprender React"}'
 ```
 
 **Listar tareas:**
 ```bash
-curl https://tu-api.koyeb.app/api/tasks
+curl https://tu-api.onrender.com/api/tasks
 ```
 
 **Actualizar tarea:**
 ```bash
-curl -X PUT https://tu-api.koyeb.app/api/tasks/1 \
+curl -X PUT https://tu-api.onrender.com/api/tasks/1 \
   -H "Content-Type: application/json" \
   -d '{"completed": true}'
 ```
 
 **Eliminar tarea:**
 ```bash
-curl -X DELETE https://tu-api.koyeb.app/api/tasks/1
+curl -X DELETE https://tu-api.onrender.com/api/tasks/1
 ```
 
 ## 🗄️ Modelo de datos
@@ -308,7 +319,7 @@ npm run preview          # Preview del build
 | Servicio | Plan | Límites | Costo |
 |----------|------|---------|-------|
 | **Neon** | Free | 0.5 GB storage, 10 GB bandwidth/mes | **$0** |
-| **Koyeb** | Free | 512 MB RAM, scale-to-zero | **$0** |
+| **Render** | Free | 512 MB RAM, scale-to-zero, 750 hrs/mes | **$0** |
 | **Vercel** | Free | 100 GB bandwidth/mes, CDN global | **$0** |
 | **DNS.HE** | Free | Subdominio, sin límites | **$0** |
 | **Total** | | | **$0/mes** |
@@ -348,6 +359,17 @@ Access to fetch at '...' from origin '...' has been blocked by CORS policy
 
 **Solución**: El free tier de Koyeb usa "scale-to-zero". La primera petición puede tardar 10-15 segundos (cold start).
 
+### Backend en Render tarda en responder
+
+**Solución**: El free tier de Render tiene "scale-to-zero". Después de 15 minutos de inactividad, el servicio se duerme. La primera petición puede tardar 30-50 segundos (cold start). Esto es completamente normal en el plan gratuito.
+
+### Error "This site can't be reached" en Render
+
+**Solución**: 
+1. Verifica que el servicio esté activo en el dashboard de Render
+2. Revisa los logs del servicio para ver si hay errores
+3. Asegúrate de que el `PORT` sea 3001 y que el Dockerfile lo exponga correctamente
+
 ### Build falla en Vercel
 
 **Solución**: Verifica que el Root Directory sea `frontend` y que todas las dependencias estén en `package.json`
@@ -368,7 +390,7 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 ## 🙏 Agradecimientos
 
 - [Neon](https://neon.tech) - PostgreSQL serverless
-- [Koyeb](https://koyeb.com) - Hosting de containers
+- [Render](https://render.com) - Hosting de containers
 - [Vercel](https://vercel.com) - Hosting de frontend
 - [Prisma](https://prisma.io) - Excelente ORM
 

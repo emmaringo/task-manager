@@ -70,8 +70,8 @@ npm run preview
    - **Output Directory**: `dist`
 
 5. **Configura las variables de entorno**:
-   - Añade `VITE_API_URL` con la URL de tu backend de Koyeb
-   - Ejemplo: `https://task-manager-backend-xxx.koyeb.app/api`
+   - Añade `VITE_API_URL` con la URL de tu backend de Render
+   - Ejemplo: `https://task-manager-backend-xxx.onrender.com/api`
 
 6. **Despliega**:
    - Haz clic en "Deploy"
@@ -79,7 +79,7 @@ npm run preview
    - Copia la URL de tu aplicación (ej. `https://task-manager.vercel.app`)
 
 7. **Actualiza el backend**:
-   - Ve a tu servicio en Koyeb
+   - Ve a tu servicio en Render
    - Actualiza la variable `FRONTEND_URL` con tu URL de Vercel
    - Redespliega el backend si es necesario
 

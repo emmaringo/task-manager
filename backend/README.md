@@ -97,27 +97,34 @@ docker run -p 3001:3001 \
   task-manager-backend
 ```
 
-## 🌐 Despliegue en Koyeb
+## 🌐 Despliegue en Render
 
 1. **Sube el código a GitHub** (si aún no lo has hecho).
 
-2. **Crea una cuenta en [Koyeb](https://app.koyeb.com)**.
+2. **Crea una cuenta en [Render](https://render.com)** (puedes usar GitHub para login).
 
-3. **Crea un nuevo servicio**:
-   - Selecciona "GitHub" como fuente
-   - Conecta tu repositorio
-   - Selecciona la carpeta `backend`
-   - Tipo de builder: **Docker**
+3. **Crea un nuevo Web Service**:
+   - Haz clic en **"New +"** → **"Web Service"**
+   - Conecta tu repositorio de GitHub
+   - Configura los siguientes campos:
+     - **Name**: `task-manager-backend`
+     - **Region**: Elige la más cercana (ej. Oregon)
+     - **Branch**: `main`
+     - **Root Directory**: `backend`
+     - **Environment**: `Docker`
+     - **Instance Type**: `Free`
 
 4. **Configura las variables de entorno**:
    - `DATABASE_URL`: Tu URL de conexión de Neon
    - `PORT`: `3001`
    - `FRONTEND_URL`: URL de tu frontend en Vercel (la obtendrás después)
+   - `NODE_ENV`: `production`
 
-5. **Despliega** y copia la URL pública que te asigna Koyeb (ej. `https://task-manager-backend-xxx.koyeb.app`).
+5. **Despliega** haciendo clic en **"Create Web Service"**. El deploy tardará 2-5 minutos.
 
-6. **Ejecuta las migraciones** (opcional, si usas `prisma migrate`):
-   Koyeb ejecutará automáticamente `prisma generate` gracias al script `postinstall`.
+6. **Copia la URL pública** que te asigna Render (ej. `https://task-manager-backend-xxx.onrender.com`).
+
+7. **Nota**: Render ejecutará automáticamente `prisma generate` gracias al script `postinstall` en el Dockerfile.
 
 ## 🔧 Scripts disponibles
 
@@ -159,6 +166,7 @@ backend/
 
 ## 📝 Notas
 
-- El servidor usa `scale-to-zero` en Koyeb (se apaga si no recibe tráfico)
-- La primera petición después de inactividad puede tardar unos segundos (cold start)
+- El servidor usa `scale-to-zero` en Render (se apaga después de 15 minutos sin tráfico)
+- La primera petición después de inactividad puede tardar 30-50 segundos (cold start)
 - Neon free tier incluye 0.5 GB de almacenamiento y 10 GB de transferencia mensual
+- Render free tier incluye 512 MB RAM y 750 horas de servicio al mes

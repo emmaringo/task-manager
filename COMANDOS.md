@@ -120,31 +120,34 @@ git branch -M main
 git push -u origin main
 ```
 
-### 2. Desplegar Backend en Koyeb
+### 2. Desplegar Backend en Render
 
 **En el navegador:**
 
-1. Ir a https://app.koyeb.com y crear cuenta
-2. Clic en "Create Service"
-3. Seleccionar "GitHub" → Conectar repositorio
+1. Ir a https://render.com y crear cuenta (puedes usar GitHub)
+2. Clic en "New +" → "Web Service"
+3. Conectar repositorio de GitHub → seleccionar tu repositorio
 4. Configuración:
-   - **Repository**: tu-usuario/task-manager
+   - **Name**: task-manager-backend
+   - **Region**: Elige la más cercana (ej. Oregon)
    - **Branch**: main
-   - **Builder**: Docker
-   - **Dockerfile path**: `backend/Dockerfile`
-   - **Port**: 3001
+   - **Root Directory**: `backend`
+   - **Environment**: Docker
+   - **Instance Type**: Free
 
 5. **Variables de entorno** (añadir estas):
    ```
    DATABASE_URL=postgresql://usuario:password@host.neon.tech/neondb?sslmode=require
    PORT=3001
    FRONTEND_URL=https://tu-app.vercel.app
+   NODE_ENV=production
    ```
    ⚠️ `FRONTEND_URL` lo actualizarás después de desplegar el frontend
 
-6. Clic en "Deploy"
-7. **Copiar la URL pública** que te asigna Koyeb
-   - Ejemplo: `https://task-manager-backend-xxxxx.koyeb.app`
+6. Clic en "Create Web Service"  
+7. Esperar 2-5 minutos mientras se despliega
+8. **Copiar la URL pública** que te asigna Render
+   - Ejemplo: `https://task-manager-backend-xxxxx.onrender.com`
 
 ### 3. Desplegar Frontend en Vercel
 
@@ -161,9 +164,9 @@ git push -u origin main
 
 5. **Variable de entorno** (añadir en "Environment Variables"):
    ```
-   VITE_API_URL=https://task-manager-backend-xxxxx.koyeb.app/api
+   VITE_API_URL=https://task-manager-backend-xxxxx.onrender.com/api
    ```
-   ⚠️ Usar la URL de Koyeb del paso anterior + `/api`
+   ⚠️ Usar la URL de Render del paso anterior + `/api`
 
 6. Clic en "Deploy"
 7. **Copiar tu URL de Vercel**
@@ -171,15 +174,15 @@ git push -u origin main
 
 ### 4. Actualizar CORS en el Backend
 
-**Volver a Koyeb:**
+**Volver a Render:**
 
-1. Ir a tu servicio en Koyeb
-2. Settings → Environment Variables
+1. Ir a tu servicio en Render
+2. Pestaña "Environment" en el menú lateral
 3. Editar `FRONTEND_URL` con tu URL de Vercel:
    ```
    FRONTEND_URL=https://task-manager-xxxxx.vercel.app
    ```
-4. Guardar (el servicio se redespliegará automáticamente)
+4. Clic en "Save Changes" (el servicio se redespliegará automáticamente)
 
 ### 5. (Opcional) Dominio personalizado gratuito
 
@@ -318,11 +321,11 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Error: Backend en Koyeb no responde (cold start)
+### Error: Backend en Render no responde (cold start)
 
-**Problema**: El free tier de Koyeb hace "scale-to-zero"
+**Problema**: El free tier de Render hace "scale-to-zero"
 
-**Solución**: Espera 10-15 segundos en la primera petición. Esto es normal y no se puede evitar en el free tier.
+**Solución**: Espera 30-50 segundos en la primera petición después de 15 minutos de inactividad. Esto es normal y no se puede evitar en el free tier.
 
 ### Error: Prisma Client no generado
 
@@ -358,7 +361,7 @@ npm run build
 1. En Vercel → Settings → Environment Variables
 2. Verifica que `VITE_API_URL` termina en `/api`:
    ```
-   VITE_API_URL=https://tu-backend.koyeb.app/api
+   VITE_API_URL=https://tu-backend.onrender.com/api
    ```
 3. Redeploy desde Vercel (Deployments → ... → Redeploy)
 
@@ -388,10 +391,10 @@ curl http://localhost:3001/api/tasks
 
 ```bash
 # 1. Verificar backend
-curl https://tu-backend.koyeb.app/health
+curl https://tu-backend.onrender.com/health
 
 # 2. Crear tarea de prueba
-curl -X POST https://tu-backend.koyeb.app/api/tasks \
+curl -X POST https://tu-backend.onrender.com/api/tasks \
   -H "Content-Type: application/json" \
   -d '{"title": "Test en producción"}'
 
@@ -404,7 +407,7 @@ curl -X POST https://tu-backend.koyeb.app/api/tasks \
 ## 📚 RECURSOS ADICIONALES
 
 - **Neon Docs**: https://neon.tech/docs
-- **Koyeb Docs**: https://www.koyeb.com/docs
+- **Render Docs**: https://render.com/docs
 - **Vercel Docs**: https://vercel.com/docs
 - **Prisma Docs**: https://www.prisma.io/docs
 - **Vite Docs**: https://vitejs.dev
@@ -416,9 +419,9 @@ curl -X POST https://tu-backend.koyeb.app/api/tasks \
 
 - [ ] Código en GitHub
 - [ ] Base de datos creada en Neon
-- [ ] Backend desplegado en Koyeb
+- [ ] Backend desplegado en Render
 - [ ] Frontend desplegado en Vercel
-- [ ] Variable `FRONTEND_URL` actualizada en Koyeb
+- [ ] Variable `FRONTEND_URL` actualizada en Render
 - [ ] Variable `VITE_API_URL` configurada en Vercel
 - [ ] Aplicación funciona correctamente
 - [ ] (Opcional) Dominio personalizado configurado
